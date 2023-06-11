@@ -1,53 +1,76 @@
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { url } from '../App';
 import axios from 'axios';
 import {  toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import * as yup from 'yup'
+import { useFormik } from "formik";
+
+const userSchemaValidation = yup.object({
+  password: yup.string().required("Password is required").min(8),
+  newpassword: yup.string().required("Password is required").min(8)
+
+
+})
 
 const Password = () => {
-    let [password,setPassword]=useState("")
-    let [confirm,setConfirm]=useState("")
     let navigate=useNavigate();
     const tokenParam = new URLSearchParams(window.location.search);
     const decodedToken = tokenParam.get('token');
-    console.log("Testing :"+decodedToken);
+   
 
-    const handleResetPassword = async () => {
+    const {handleSubmit,handleChange, errors,touched, values}=useFormik({
+      initialValues :{
+          password:"",
+          newpassword:"",
+      },
+      validationSchema : userSchemaValidation,
+      onSubmit:async(values)=>{
         try {
-          const response = await axios.post(`${url}/users/password-reset`, {
-            password,
-            confirm,
+          const response = await axios.post(`${url}/users/password`, {
+            values,
             token : decodedToken
           });
     
           if (response.status === 200) {
-            console.log(response)
             toast.success(response.data.message)
-            navigate('/reset')
+            navigate('/login')
           } else {
-           
+            console.log('Unexpected response:', response);
           }
         } catch (error) {
-          console.log('Error:', error.message);
           toast.error(error.response.data.message)
         }
-      };
+      
+      }
+    })
+
+      useEffect(() => {
+        console.log('Password component mounted');
+        console.log('Decoded Token:', decodedToken);
+      }, [decodedToken]);
+    
+  
 
     return (
         <div className='Password-wrapper'>
             <h1 style={{ "textAlign": "center" }}>Reset Password </h1>
-            <Form>
-                <Form.Group className="mb-3">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control type="Password" placeholder="Enter Password" onChange={(e) => setPassword(e.target.value)} />
-                </Form.Group>
-                <Form.Group className="mb-3" >
-                    <Form.Label>Confirm Password</Form.Label>
-                    <Form.Control type="password" placeholder="Enter Confirm Password" onChange={(e) => setConfirm(e.target.value)} />
-                </Form.Group>
-                <Button variant="primary" onClick={handleResetPassword}>
+            <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
+          <Form.Label className='add'>Password</Form.Label>
+          <Form.Control type="password" placeholder="Enter the Password" className="password"  name="password"  value={values.password}
+                   onChange={handleChange}/>
+          {touched.password && errors.password ? <p style={{color:"crimson"}}>{errors.password}</p>:""}
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label className='add'>New Password</Form.Label>
+          <Form.Control type="password" placeholder="Enter the New Password" className="newpassword"  name="newpassword"  value={values.newpassword}
+                   onChange={handleChange}/>
+          {touched.newpassword && errors.newpassword ? <p style={{color:"crimson"}}>{errors.newpassword}</p>:""}
+        </Form.Group>
+                <Button variant="primary" type='submit'>
                     Reset Password
                 </Button> 
             </Form>
