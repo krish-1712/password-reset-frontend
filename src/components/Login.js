@@ -52,7 +52,7 @@ useEffect(() => {
       if (expirationTimestamp < currentTimestamp) {
         console.log('Token has expired');
         sessionStorage.removeItem('token'); 
-        navigate('/login'); 
+        navigate('/'); 
       }
     } catch (error) {
       console.error('Error decoding token:', error);

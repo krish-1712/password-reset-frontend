@@ -36,7 +36,7 @@ const Password = () => {
     
           if (response.status === 200) {
             toast.success(response.data.message)
-            navigate('/login')
+            navigate('/')
           } else {
             console.log('Unexpected response:', response);
           }

@@ -44,7 +44,7 @@ function Register() {
         console.log(res);
         toast.success(res.data.message);
         sessionStorage.setItem('token', res.data.token);
-        navigate('/login');
+        navigate('/');
       } catch (error) {
         toast.error(error.response.data.message);
       }
