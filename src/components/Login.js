@@ -11,7 +11,7 @@ import jwt_decode from 'jwt-decode';
 
 const userSchemaValidation = yup.object({
   email: yup.string().email("Invalid email format").required("Email is required"),
-  password: yup.string().required("Password is required")
+  password: yup.string().required("Password is required").min(8)
 })
 
 
@@ -28,35 +28,38 @@ function Login() {
     validationSchema : userSchemaValidation,
     onSubmit:async(values)=>{
       try {
-      
-        let res= await axios.post(`${url}/users/login`,values)
-        toast.success(res.data.message)
-        sessionStorage.setItem('token',res.data.token)
-        navigate('/dashboard')
-    
+        let res = await axios.post(`${url}/users/login`, values);
+        console.log(res); 
+        toast.success(res.data.message);
+        sessionStorage.setItem('token', res.data.token);
+        navigate('/dashboard');
       } catch (error) {
-        toast.error(error.response.data.message)
-  
+        toast.error(error.response.data.message);
       }
     
     }
   })
-  useEffect(()=>{
-    if(sessionStorage.getItem('token')){
-        var token = sessionStorage.getItem('token');
-        const decodedToken = jwt_decode(token);
-    const expirationTimestamp = decodedToken.exp;
 
-    // Get the current timestamp
-    const currentTimestamp = Math.floor(Date.now() / 1000);
-    if (expirationTimestamp < currentTimestamp) {
+
+useEffect(() => {
+  if (sessionStorage.getItem('token')) {
+    var token = sessionStorage.getItem('token');
+    try {
+      const decodedToken = jwt_decode(token); 
+      const expirationTimestamp = decodedToken.exp;
+      const currentTimestamp = Math.floor(Date.now() / 1000);
+
+      if (expirationTimestamp < currentTimestamp) {
         console.log('Token has expired');
-        navigate('/login');
-      } 
-       navigate('/dashboard');
-
+        sessionStorage.removeItem('token'); 
+        navigate('/login'); 
+      }
+    } catch (error) {
+      console.error('Error decoding token:', error);
     }
-},[navigate])
+  }
+}, [navigate]);
+
 
     return (
         <div className='login-wrapper'> 
@@ -80,6 +83,9 @@ function Login() {
         <br></br>
         <Button variant="primary"  onClick={()=>navigate('/forgot')}>
           Forgot Password
+        </Button>
+        <Button variant="primary"  onClick={()=>navigate('/register')} style={{marginLeft:"30px"}}>
+        Create Account
         </Button>
   
       </Form>

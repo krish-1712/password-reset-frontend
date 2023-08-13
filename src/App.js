@@ -4,6 +4,7 @@ import Dashboard from "./components/Dashboard";
 import Forgot from "./components/Forgot";
 import Password from "./components/Password";
 import Reset from "./components/Reset";
+import Register from "./components/Register";
 export const url = "http://localhost:8000" 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/password" element={<Password />} />
           <Route path="/reset" element={<Reset />} />
+          <Route path="/register" element={<Register/>} />
           <Route path="*" element={<Navigate to='/login' />} />
 
 
