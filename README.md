@@ -72,4 +72,4 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 
 
-Password Reset Application (Backend) : https://github.com/krish-1712/password-reset.git
+Password Reset Application(Backend) : https://github.com/krish-1712/password-reset.git
